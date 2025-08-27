@@ -21,12 +21,9 @@ Há diferença, pois o printf é capaz de escrever textos para o usuário, forma
 E o write é capaz de escrever, além de texto, dados binários, comtrolar quando enviar os dados e possui um comportamento previsível.
 
 **3. Qual método é mais previsível? Por quê você acha isso?**
-
-```
-[Sua análise aqui]
+O método mais previsível é o write, já que sempre chama a syscall após a mensagem, já o print depende de um buffer para imprimir tudo.
 ```
 
----
 
 ## 2️⃣ Exercício 2 - Leitura de Arquivo
 
@@ -44,19 +41,19 @@ strace -e openat,read,close ./ex2_leitura
 **1. Qual file descriptor foi usado? Por que não começou em 0, 1 ou 2?**
 
 ```
-[Sua análise aqui]
+O file descriptor 3 foi usado, pois os file 0 é a entrada, o 1 para saída e o 2 para erro, logo, o 3 é para os processos que estão sendo lidos.
 ```
 
 **2. Como você sabe que o arquivo foi lido completamente?**
 
 ```
-[Sua análise aqui]
+O arquivo foi lido completamente, pois ele foi fechado, ou seja concluído.
 ```
 
 **3. Por que verificar retorno de cada syscall?**
 
 ```
-[Sua análise aqui]
+É preciso verificar o retorno de cada syscall para garantir que não houve nenhum erro no meio do processo.
 ```
 
 ---
@@ -64,10 +61,10 @@ strace -e openat,read,close ./ex2_leitura
 ## 3️⃣ Exercício 3 - Contador com Loop
 
 ### 📋 Resultados (BUFFER_SIZE = 64):
-- Linhas: _____ (esperado: 25)
-- Caracteres: _____
-- Chamadas read(): _____
-- Tempo: _____ segundos
+- Linhas: 0 (esperado: 25)
+- Caracteres: 0
+- Chamadas read(): 21
+- Tempo: 0.000389 segundos
 
 ### 🧪 Experimentos com buffer:
 
@@ -83,19 +80,19 @@ strace -e openat,read,close ./ex2_leitura
 **1. Como o tamanho do buffer afeta o número de syscalls?**
 
 ```
-[Sua análise aqui]
+Quanto maior o buffer, menor o numero de syscalls
 ```
 
 **2. Todas as chamadas read() retornaram BUFFER_SIZE bytes? Discorra brevemente sobre**
 
 ```
-[Sua análise aqui]
+Não, elas podem retornar menos se houverem interrupções ou quando faltam dados no arquivo.
 ```
 
 **3. Qual é a relação entre syscalls e performance?**
 
 ```
-[Sua análise aqui]
+As syscalls implicam na variação entre o kernel e o que o usuário inseriu, consumindo certa quantidade de tempo. Logo, se houverem muitas syscalls a performance é reduzida, fazendo com que o buffer seja melhor em alguns casos.
 ```
 
 ---
@@ -103,10 +100,10 @@ strace -e openat,read,close ./ex2_leitura
 ## 4️⃣ Exercício 4 - Cópia de Arquivo
 
 ### 📈 Resultados:
-- Bytes copiados: _____
-- Operações: _____
-- Tempo: _____ segundos
-- Throughput: _____ KB/s
+- Bytes copiados: 1364
+- Operações: 6
+- Tempo: 0.000160 segundos 
+- Throughput: 8325.20 KB/s
 
 ### ✅ Verificação:
 ```bash
@@ -119,31 +116,33 @@ Resultado: [ ] Idênticos [ ] Diferentes
 **1. Por que devemos verificar que bytes_escritos == bytes_lidos?**
 
 ```
-[Sua análise aqui]
+Por que o write pode escrever menos bytes que o solicitado
 ```
 
 **2. Que flags são essenciais no open() do destino?**
 
 ```
-[Sua análise aqui]
+O_WRONLY
+O_CREAT
+O_TRUNC
 ```
 
 **3. O número de reads e writes é igual? Por quê?**
 
 ```
-[Sua análise aqui]
+Sim, pois cada read gera um write correspondente com o mesmo numero de bytes.
 ```
 
 **4. Como você saberia se o disco ficou cheio?**
 
 ```
-[Sua análise aqui]
+O write retornaria um valor de bytes lidos negativos, mostrando que o processo foi interrompido.
 ```
 
 **5. O que acontece se esquecer de fechar os arquivos?**
 
 ```
-[Sua análise aqui]
+Os dados ficarão presos no buffer, causando perda de dados e vazamento de recursos
 ```
 
 ---
@@ -155,19 +154,20 @@ Resultado: [ ] Idênticos [ ] Diferentes
 **1. Como as syscalls demonstram a transição usuário → kernel?**
 
 ```
-[Sua análise aqui]
+Syscalls funcionam como o elo entre programas e o sistema operacional, permitindo que o usuário solicite serviços ao kernel para acessar recursos restritos de maneira controlada e segura.
+
 ```
 
 **2. Qual é o seu entendimento sobre a importância dos file descriptors?**
 
 ```
-[Sua análise aqui]
+File descriptors são usados pelo sistema para identificar arquivos, dispositivos ou conexões. Eles permitem que os programas acessem esses recursos de forma padronizada.
 ```
 
 **3. Discorra sobre a relação entre o tamanho do buffer e performance:**
 
 ```
-[Sua análise aqui]
+Quanto maior o buffer, maior a performance pois são usadas menos syscalls, que exigem bastante performance
 ```
 
 ### ⚡ Comparação de Performance
@@ -178,12 +178,12 @@ time ./ex4_copia
 time cp dados/origem.txt dados/destino_cp.txt
 ```
 
-**Qual foi mais rápido?** _____
+**Qual foi mais rápido?** ex4_copia
 
 **Por que você acha que foi mais rápido?**
 
 ```
-[Sua análise aqui]
+Provavelmente o buffer do exercício é maior que o buffer do sistema.
 ```
 
 ---

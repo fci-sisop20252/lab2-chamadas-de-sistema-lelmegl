@@ -14,7 +14,7 @@
 #include <stdio.h>    // Para printf() e perror()
 #include <errno.h>    // Para códigos de erro
 
-#define BUFFER_SIZE 128
+#define BUFFER_SIZE 10
 
 int main() {
     char buffer[BUFFER_SIZE];
